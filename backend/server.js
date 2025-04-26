@@ -17,6 +17,7 @@ const cartRoutes=require("./Routes/cartRoutes")
 const orderRoutes=require("./Routes/orderRoutes")
 const contactRoutes=require("./Routes/contactUsRoutes")
 const reviewRoutes = require("./Routes/reviewRoutes");
+const razorpayRoutes=require("./Routes/razorpayRoutes")
 
 //routes ke use
 app.use("/user", userRoutes);
@@ -26,11 +27,13 @@ app.use("/cart",cartRoutes);
 app.use("/order",orderRoutes);
 app.use("/contact",contactRoutes)
 app.use("/review", reviewRoutes);
+app.use("/razorpay",razorpayRoutes)
+
 
 
 
 app.get("/", (req, res) => {
-  res.send("Hello, welcome to MDM Lights");
+  res.send("Hello, welcome to Raha Organics");
 });
 
 sequelize
@@ -45,3 +48,4 @@ sequelize
 app.listen(process.env.PORT, () => {
   console.log(`Server is running on port ${process.env.PORT}`);
 });
+

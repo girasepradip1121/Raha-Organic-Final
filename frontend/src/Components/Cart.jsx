@@ -103,10 +103,6 @@ export default function CartPage() {
     window.scrollTo({ top: 0, behavior: "smooth" }); // Scroll to the top smoothly
   };
 
-  // const handleCheckout = () => {
-  //   navigate("/checkoutpage"); // Navigate to the checkout page
-  //   window.scrollTo({ top: 0, behavior: "smooth" }); // Scroll to the top smoothly
-  // };
   if (!token) {
     return (
       <div className="flex justify-center items-center min-h-[60vh] px-4">

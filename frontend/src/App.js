@@ -14,6 +14,12 @@ import LoginPage from "./Components/Login";
 import OrderSuccess from "./Pages/OrderSuccessPage";
 import MyOrders from "./Pages/MyOrders";
 
+//POLICIES
+import ShippingPolicy from "./Pages/ShippingPolicy";
+import TermsConditions from "./Pages/TermsCondition";
+import CancellationRefund from "./Pages/CancellationAndRefund";
+import PrivacyPolicy from "./Pages/PrivacyPolicy";
+
 import SignupPage from "./Components/Sign";
 import ProductPage from "./Pages/ProductPage";
 import AdminLayoutComponent from "./Components/AdminLayoutComponent";
@@ -49,12 +55,14 @@ function App() {
                 <Route path="/cart" element={<CartPage />} />
                 <Route path="/checkoutpage" element={<CheckoutPage />} />
                 <Route path="/myorders" element={<MyOrders />} />
-                
-
-
                 <Route path="/order-success" element={<OrderSuccess />} />
-
                 <Route path="/product/:productId" element={<ProductPage />} />
+
+                <Route path="/shippingpolicy" element={<ShippingPolicy />} />
+                <Route path="/refunds" element={<CancellationRefund />} />
+                <Route path="/tandc" element={<TermsConditions />} />
+                <Route path="/privacypolicy" element={<PrivacyPolicy />} />
+
               </Routes>
               <Footer />
             </>
@@ -65,7 +73,7 @@ function App() {
           path="/admin/*"
           element={
             <AdminRoutes>
-            <AdminLayoutComponent />
+              <AdminLayoutComponent />
             </AdminRoutes>
           }
         >

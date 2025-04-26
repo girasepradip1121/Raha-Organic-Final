@@ -107,15 +107,15 @@ const Footer = () => {
               </li>
               <li>
                 <Link
-                  to="#"
+                  to="/shippingpolicy"
                   className="text-white/80 hover:text-white transition-colors"
                 >
-                  Shipping & Returns
+                  Shipping Policy
                 </Link>
               </li>
               <li>
                 <Link
-                  to="#"
+                  to="/privacypolicy"
                   className="text-white/80 hover:text-white transition-colors"
                 >
                   Privacy Policy
@@ -123,15 +123,15 @@ const Footer = () => {
               </li>
               <li>
                 <Link
-                  to="#"
+                  to="/refunds"
                   className="text-white/80 hover:text-white transition-colors"
                 >
-                  About
+                  Cancellation&Refunds
                 </Link>
               </li>
               <li>
                 <Link
-                  to="#"
+                  to="/tandc"
                   className="text-white/80 hover:text-white transition-colors"
                 >
                   Terms & Conditions

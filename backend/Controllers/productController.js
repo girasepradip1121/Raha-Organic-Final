@@ -229,7 +229,6 @@ const getBestSellingProducts = async (req, res) => {
     });
 
     const productIds = bestSellers.map((item) => item.productId);
-
     // Step 2: Fetch full product details with images
     const products = await Product.findAll({
       where: {

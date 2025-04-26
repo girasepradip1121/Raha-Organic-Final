@@ -63,7 +63,7 @@ const Order = Sequelize.define(
     },
     tax: {
       type: DataTypes.FLOAT,
-      allowNull: false,
+      defaultValue: 0,
     },
     totalPrice: {
       type: DataTypes.FLOAT,
@@ -73,6 +73,22 @@ const Order = Sequelize.define(
       type: DataTypes.INTEGER,
       defaultValue: 1,
       comment: "1-pending, 2-processing, 3-shipped ,4-delivered, 5-cancelled",
+    },
+    razorpay_order_id: {
+      type: DataTypes.STRING,
+      allowNull: true,
+    },
+    razorpay_payment_id: {
+      type: DataTypes.STRING,
+      allowNull: true,
+    },
+    razorpay_signature: {
+      type: DataTypes.STRING,
+      allowNull: true,
+    },
+    paymentStatus: {
+      type: DataTypes.STRING,
+      defaultValue: "Pending",
     },
   },
   {

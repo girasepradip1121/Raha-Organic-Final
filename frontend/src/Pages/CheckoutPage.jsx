@@ -7,7 +7,7 @@ import { API_URL, userToken } from "../Components/Variable";
 import { toast } from "react-hot-toast";
 
 export default function CheckoutPage() {
-  const [paymentMethod, setPaymentMethod] = useState("cod");
+  const [paymentMethod, setPaymentMethod] = useState("online");
 
   const location = useLocation();
   const navigate = useNavigate();
@@ -29,8 +29,8 @@ export default function CheckoutPage() {
     return sum + (product.price || item.price) * (item.quantity || 1);
   }, 0);
 
-  const shipping = 20;
-  const tax = 20;
+  const shipping = 0;
+  const tax = 0;
   const total = subtotal + shipping + tax;
 
   // Form state
@@ -44,9 +44,6 @@ export default function CheckoutPage() {
     city: "",
     state: "",
     postalCode: "",
-    // cardNumber: "",
-    // expiryDate: "",
-    // cvc: "",
   });
 
   // Handle input changes
@@ -82,9 +79,9 @@ export default function CheckoutPage() {
       paymentMethod,
       formData,
       status: 1,
-      orderItems: finalCartItems.map((item) => {
+      orderItems: finalCartItems?.map((item) => {
         const product = item.product || item;
-        const productId = item.productId; // 👈 Yeh fix hai
+        const productId = item.productId; //  Yeh fix hai
         const price = product.price;
         const quantity = item.quantity || 1;
 
@@ -96,34 +93,67 @@ export default function CheckoutPage() {
         };
       }),
     };
+
     try {
-      await axios.post(`${API_URL}/order/create`, orderData, {
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${userData.token}`,
-        },
-      });
-      toast.success("Order placed successfully");
-      navigate("/order-success");
-    } catch (error) {
-      console.error(
-        "Error placing order:",
-        error.response ? error.response.data : error
+      const razorpayRes = await axios.post(
+        `${API_URL}/razorpay/create-razorpay-order`,
+        { totalPrice: total }
       );
-      toast.error("Something went wrong!");
+
+      const { orderId, key, amount, currency } = razorpayRes.data;
+
+      const options = {
+        key,
+        amount,
+        currency,
+        order_id: orderId,
+        name: "RAHA ORGANIC",
+        description: "Order Payment",
+        handler: async function (response) {
+          // Payment Success → Now place the order
+          await placeOrder({
+            ...orderData,
+            razorpay_order_id: response.razorpay_order_id,
+            razorpay_payment_id: response.razorpay_payment_id,
+            razorpay_signature: response.razorpay_signature,
+          });
+        },
+        prefill: {
+          name: `${formData.firstName} ${formData.lastName}`,
+          email: formData.email,
+          contact: formData.phone,
+        },
+        theme: { color: "#000000" },
+      };
+
+      const rzp = new window.Razorpay(options);
+      rzp.open();
+    } catch (err) {
+      console.error(err);
+      toast.error("Payment Failed to Initialize");
     }
+
+    const placeOrder=async()=>{
+      try {
+        await axios.post(`${API_URL}/order/create`, orderData, {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${userData.token}`,
+          },
+        });
+        toast.success("Order placed successfully");
+        navigate("/order-success");
+      } catch (error) {
+        console.error(
+          "Error placing order:",
+          error.response ? error.response.data : error
+        );
+        toast.error("Something went wrong!");
+      }
+    }
+   
     console.log("Final Cart Items being sent to backend:", finalCartItems);
 
-    // Payment method validation
-    // if (
-    //   formData.paymentMethod === "credit" &&
-    //   (!formData.cardNumber || !formData.expiryDate || !formData.cvc)
-    // ) {
-    //   alert("Please fill in all payment details");
-    //   return;
-    // }
-
-    // Process order (in a real app, this would call an API)
   };
 
   return (
@@ -361,97 +391,7 @@ export default function CheckoutPage() {
                 Payment Method
               </h2>
               <div className="space-y-4">
-                {/* <div className="border border-gray-300 p-4">
-                  <div className="flex items-center">
-                    <input
-                      type="radio"
-                      id="credit"
-                      name="paymentMethod"
-                      value="credit"
-                      checked={formData.paymentMethod === "credit"}
-                      onChange={handleChange}
-                      className="h-4 w-4 text-primary focus:ring-primary border-gray-300"
-                    />
-                    <label
-                      htmlFor="credit"
-                      className="ml-2 block text-sm font-medium text-gray-700"
-                    >
-                      Credit/Debit Card
-                    </label>
-                    <CreditCard className="ml-auto h-5 w-5 text-gray-400" />
-                  </div>
-
-                  {formData.paymentMethod === "credit" && (
-                    <div className="mt-4 grid grid-cols-1 gap-4">
-                      <div>
-                        <label
-                          htmlFor="cardNumber"
-                          className="block text-sm font-medium text-gray-700 mb-1"
-                        >
-                          Card Number
-                        </label>
-                        <input
-                          type="text"
-                          id="cardNumber"
-                          name="cardNumber"
-                          value={formData.cardNumber}
-                          onChange={handleChange}
-                          placeholder="0000 0000 0000 0000"
-                          className="w-full px-3 py-2 border border-gray-300 focus:outline-none focus:ring-1 focus:ring-primary"
-                        />
-                      </div>
-                      <div className="grid grid-cols-2 gap-4">
-                        <div>
-                          <label
-                            htmlFor="expiryDate"
-                            className="block text-sm font-medium text-gray-700 mb-1"
-                          >
-                            Expiry Date
-                          </label>
-                          <input
-                            type="text"
-                            id="expiryDate"
-                            name="expiryDate"
-                            value={formData.expiryDate}
-                            onChange={handleChange}
-                            placeholder="MM / YY"
-                            className="w-full px-3 py-2 border border-gray-300 focus:outline-none focus:ring-1 focus:ring-primary"
-                          />
-                        </div>
-                        <div>
-                          <label
-                            htmlFor="cvv"
-                            className="block text-sm font-medium text-gray-700 mb-1"
-                          >
-                            CVV
-                          </label>
-                          <input
-                            type="password" // Hides input value
-                            id="cvv"
-                            name="cvv"
-                            value={formData.cvc}
-                            onChange={handleChange}
-                            placeholder="CVV"
-                            inputMode="numeric"
-                            pattern="[0-9]*"
-                            onInput={(e) =>
-                              (e.target.value = e.target.value.replace(
-                                /\D/,
-                                ""
-                              ))
-                            }
-                            className="w-full px-3 py-2 border border-gray-300 focus:outline-none focus:ring-1 focus:ring-primary"
-                            style={{
-                              WebkitTextSecurity: "disc", // Hides numbers without triggering password manager
-                            }}
-                            autoComplete="new-password" // Prevents browser from showing suggestions
-                          />
-                        </div>
-                      </div>
-                    </div>
-                  )}
-                </div> */}
-
+                
                 <div className="border border-gray-300 p-4">
                   <div className="flex items-center">
                     <input
@@ -473,7 +413,7 @@ export default function CheckoutPage() {
                   </div>
                 </div>
 
-                <div className="border border-gray-300 p-4">
+                {/* <div className="border border-gray-300 p-4">
                   <div className="flex items-center">
                     <input
                       type="radio"
@@ -492,7 +432,7 @@ export default function CheckoutPage() {
                       Cash on delivery
                     </label>
                   </div>
-                </div>
+                </div> */}
               </div>
             </section>
           </form>
@@ -617,13 +557,13 @@ export default function CheckoutPage() {
               <div className="flex justify-between">
                 <p className="text-sm text-gray-600">Shipping</p>
                 <p className="text-sm font-medium">
-                  ₹{(shipping || 0).toFixed(2)}
+                  FREE
                 </p>
               </div>
-              <div className="flex justify-between">
+              {/* <div className="flex justify-between">
                 <p className="text-sm text-gray-600">Tax</p>
                 <p className="text-sm font-medium">₹{(tax || 0).toFixed(2)}</p>
-              </div>
+              </div> */}
               <div className="flex justify-between border-t border-gray-200 pt-2 mt-2">
                 <p className="text-base font-medium">Total</p>
                 <p className="text-base font-bold">

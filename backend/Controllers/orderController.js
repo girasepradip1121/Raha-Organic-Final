@@ -32,13 +32,13 @@ const createOrder = async (req, res) => {
     } = formData || {};
     console.log("Final Extracted Data:", { firstName, email, phone, address });
     if (
-      !userId ||
-      !tax ||
-      !totalPrice ||
-      !paymentMethod ||
-      !phone ||
-      !email ||
-      !status
+      !userId==null ||
+      !tax ==null||
+      !totalPrice==null ||
+      !paymentMethod==null||
+      !phone==null||
+      !email==null||
+      !status==null
     ) {
       return res.status(400).json({ error: "All fields are required" });
     }

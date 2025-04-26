@@ -45,7 +45,8 @@ const Product=Sequelize.define('product',{
     totalRatings: {
         type: DataTypes.INTEGER,
         defaultValue: 0 // Kitne logon ne rate kiya
-    }
+    },
+    
 }, { 
     tableName:"product",
     timestamps: true 
